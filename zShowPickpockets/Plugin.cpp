@@ -25,14 +25,8 @@ namespace GOTHIC_ENGINE {
 		if (x < 0 || x > 8192 || y < 0 || y > 8192)
 			return;
 
-		zCOLOR color = zCOLOR(255, 200, 0);
-
-		zCView* Coin = new zCView();
-		Coin->InsertBack("ICON_COINS.TGA");
 		view->InsertItem(Coin);
 		Coin->SetPos(x, y);
-		Coin->SetSize(CoinWidth, CoinHeight);
-		Coin->SetColor(color);
 		Coin->SetTransparency(transparency);
 		Coin->SetAlphaBlendFunc(zRND_ALPHA_FUNC_BLEND);
 		Coin->Blit();
@@ -80,8 +74,9 @@ namespace GOTHIC_ENGINE {
 		if (!ShowPickPockets)
 			return;
 
-		zCView* screenMain = zNEW(zCView)(0, 0, 8192, 8192);
-		screen->InsertItem(screenMain);
+		screen->SetFontColor(GFX_GOLD);
+		screen->Print(8192 - screen->FontSize(Z PickPocketsTXT) - 100, 500, Z PickPocketsTXT);
+		screen->SetFontColor(GFX_WHITE);		
 
 		auto list = ogame->GetWorld()->CastTo<oCWorld>()->voblist_npcs->next;
 
@@ -109,20 +104,33 @@ namespace GOTHIC_ENGINE {
 			if (!player->CanSee(npc, 1))
 				transparency = 80;
 
-			ShowCoin(screenMain, npcPos, transparency);
+			ShowCoin(screen, npcPos, transparency);
 		}
 
-		screenMain->Blit();
-		screen->RemoveItem(screenMain);
+		int x, y, sx, sy;
+		screen->GetViewport(x, y, sx, sy);
+		zrenderer->SetViewport(x, y, sx, sy);
+	}
+
+	void UpdateOptions() {
+		MaxDistance = zoptions->ReadInt(PLUGIN_NAME, "MaxDistance", 3000);
+		IconAboveHead = zoptions->ReadBool(PLUGIN_NAME, "IconAboveHead", true);
+		HotKey = GetKeyCode(zoptions->ReadString(PLUGIN_NAME, "HotKey", "KEY_LBRACKET"));
+		PickPocketsTXT = (string)zoptions->ReadString(PLUGIN_NAME, "PickPocketsTXT", "PickPockets ON");
 	}
 
 	void Game_Entry() {
 	}
 
 	void Game_Init() {
-		MaxDistance = zoptions->ReadInt(PLUGIN_NAME, "MaxDistance", 3000);
-		IconAboveHead = zoptions->ReadBool(PLUGIN_NAME, "IconAboveHead", true);
-		HotKey = GetKeyCode(zoptions->ReadString(PLUGIN_NAME, "HotKey", "KEY_LBRACKET"));
+		UpdateOptions();
+
+		if (!Coin) {
+			Coin = new zCView();
+			Coin->InsertBack("ICON_COINS.TGA");
+			Coin->SetSize(CoinWidth, CoinHeight);
+			Coin->SetColor(GFX_GOLD);
+		}
 	}
 
 	void Game_Exit() {
@@ -207,6 +215,7 @@ namespace GOTHIC_ENGINE {
 	}
 
 	void Game_ApplyOptions() {
+		UpdateOptions();
 	}
 
 	/*

@@ -6,6 +6,8 @@ namespace GOTHIC_ENGINE {
 #define PLUGIN_NAME "zShowPickpockets"
 	zCArray<oCInfo*> pickpocketInfos;
 
+	static zCView* Coin;
+
 	int CoinWidth = 100;
 	int CoinHeight = 150;
 
@@ -13,6 +15,7 @@ namespace GOTHIC_ENGINE {
 	bool_t ShowPickPockets = false;
 	bool_t IconAboveHead;
 	int MaxDistance;
+	string PickPocketsTXT;
 
 	int GetKeyCode(zSTRING key) {
 		int keyCode = Invalid;
