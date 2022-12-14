@@ -1,6 +1,7 @@
 # zShowPickpockets
 
 #### Plugin shows which NPC can be pickpocketed.
+*Only for Gothic 2 Night of the Raven*
 
 ### Default settings
 |Setting|Default value|Description|
